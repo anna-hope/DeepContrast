@@ -27,9 +27,7 @@ from go_model.train_model import callbacks
 from opts import parse_opts
 
 
-
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     opt = parse_opts()
 
     random.seed(opt.manual_seed)
@@ -53,28 +51,29 @@ if __name__ == '__main__':
         if not os.path.exists(opt.HN_log_dir):
             os.makedirs(opt.HN_log_dir)
 
-    print('\n--- STEP 2 - TRAIN MODEL ---\n')
+    print("\n--- STEP 2 - TRAIN MODEL ---\n")
 
     # data generator for train and val data
     train_gen = train_generator(
-        pro_data_dir=opt.HN_pro_data_dir,
-        batch_size=opt.batch_size)
+        pro_data_dir=opt.HN_pro_data_dir, batch_size=opt.batch_size
+    )
     x_val, y_val, val_gen = val_generator(
-        pro_data_dir=opt.HN_pro_data_dir,
-        batch_size=opt.batch_size)
+        pro_data_dir=opt.HN_pro_data_dir, batch_size=opt.batch_size
+    )
 
-    # get CNN model 
+    # get CNN model
     my_model = get_model(
         out_dir=opt.HN_out_dir,
-        run_model=opt.run_model, 
-        activation=opt.activation, 
+        run_model=opt.run_model,
+        activation=opt.activation,
         input_shape=opt.input_shape,
-        freeze_layer=opt.freeze_layer, 
-        transfer=opt.transfer)
+        freeze_layer=opt.freeze_layer,
+        transfer=opt.transfer,
+    )
 
     ### train model
     if not opt.no_train:
-        if opt.optimizer_function == 'adam':
+        if opt.optimizer_function == "adam":
             optimizer = Adam(learning_rate=opt.lr)
         train_model(
             root_dir=opt.root_dir,
@@ -91,5 +90,5 @@ if __name__ == '__main__':
             epoch=opt.epoch,
             optimizer=optimizer,
             loss_function=opt.loss_function,
-            lr=opt.lr)
-
+            lr=opt.lr,
+        )

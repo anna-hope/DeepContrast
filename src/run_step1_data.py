@@ -15,11 +15,9 @@ from train_data.get_pat_dataset import get_pat_dataset
 from train_data.preprocess_data import preprocess_data
 
 
-
-if __name__ == '__main__':
-    
+if __name__ == "__main__":
     opt = parse_opts()
-    
+
     random.seed(opt.manual_seed)
     np.random.seed(opt.manual_seed)
     tf.random.set_seed(opt.manual_seed)
@@ -35,13 +33,13 @@ if __name__ == '__main__':
         if not os.path.exists(opt.HN_data_dir):
             os.makedirs(opts.HN_data_dir)
         if not os.path.exists(opt.HN_label_dir):
-            os.makedirs(opt.HN_label_dir)       
+            os.makedirs(opt.HN_label_dir)
         if not os.path.exists(opt.HN_pro_data_dir):
             os.makefirs(opt.HN_pro_data_dir)
         if not os.path.exists(opt.HN_pre_data_dir):
             os.makedirs(opt.HN_pre_data_dir)
-    
-    print('\n--- STEP 1 - GET DATA ---\n')
+
+    print("\n--- STEP 1 - GET DATA ---\n")
 
     if opt.preprocess_data:
         preprocess_data(
@@ -49,14 +47,16 @@ if __name__ == '__main__':
             pre_data_dir=opt.HN_pre_data_dir,
             new_spacing=opt.new_spacing,
             data_exclude=opt.data_exclude,
-            crop_shape=opt.HN_crop_shape)
+            crop_shape=opt.HN_crop_shape,
+        )
 
     data_tot, label_tot, ID_tot = get_pat_dataset(
         data_dir=opt.HN_data_dir,
         pre_data_dir=opt.HN_pre_data_dir,
         label_dir=opt.HN_label_dir,
         label_file=opt.HN_label_file,
-        pro_data_dir=opt.HN_pro_data_dir)
+        pro_data_dir=opt.HN_pro_data_dir,
+    )
 
     get_img_dataset(
         pro_data_dir=opt.HN_pro_data_dir,
@@ -64,7 +64,5 @@ if __name__ == '__main__':
         data_tot=data_tot,
         ID_tot=ID_tot,
         label_tot=label_tot,
-        slice_range=opt.HN_slice_range)
-
-
-
+        slice_range=opt.HN_slice_range,
+    )

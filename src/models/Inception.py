@@ -1,4 +1,3 @@
-
 import os
 import numpy as np
 import pandas as pd
@@ -14,33 +13,33 @@ from tensorflow.keras.applications import InceptionV3
 from tensorflow.keras.applications import InceptionResNetV2
 
 
-
-def Inception(inception, input_shape, transfer=False, freeze_layer=None, activation='sigmoid'):
-    
+def Inception(
+    inception, input_shape, transfer=False, freeze_layer=None, activation="sigmoid"
+):
     """
     Google Inception Net: Xception, InceptionV3, InceptionResNetV2;
     Keras CNN models for use: https://keras.io/api/applications/
     InceptionV3(top1 acc 0.779)
     InceptionResnetV2(top1 acc 0.803),
     ResNet152V2(top1 acc 0.780)
-    
+
     Args:
         effnet {str} -- EfficientNets with different layers;
         input_shape {np.array} -- input data shape;
-    
+
     Keyword args:
         inception {boolean} -- decide if transfer learning;
         freeze_layer {int} -- number of layers to freeze;
         activation {str or function} -- activation function in last layer: 'sigmoid', 'softmax';
-    
+
     Returns:
-        Inception model;    
-    
+        Inception model;
+
     """
 
     # determine if use transfer learnong or not
     if transfer == True:
-        weights = 'imagenet'
+        weights = "imagenet"
     elif transfer == False:
         weights = None
 
@@ -52,40 +51,40 @@ def Inception(inception, input_shape, transfer=False, freeze_layer=None, activat
         include_top = False
 
     ## determine n_output
-    if activation == 'softmax':
+    if activation == "softmax":
         n_output = 2
-    elif activation == 'sigmoid':
+    elif activation == "sigmoid":
         n_output = 1
-    
+
     ### determine ResNet base model
-    if inception == 'Xception':
+    if inception == "Xception":
         base_model = Xception(
             weights=weights,
             include_top=include_top,
             input_shape=input_shape,
-            pooling=None
-            )
-    elif inception == 'InceptionV3':
+            pooling=None,
+        )
+    elif inception == "InceptionV3":
         base_model = InceptionV3(
             weights=weights,
             include_top=include_top,
             input_shape=input_shape,
-            pooling=None
-            )
-    elif inception == 'InceptionResNetV2':
+            pooling=None,
+        )
+    elif inception == "InceptionResNetV2":
         base_model = InceptionResNetV2(
             weights=weights,
             include_top=include_top,
             input_shape=input_shape,
-            pooling=None
-            )
+            pooling=None,
+        )
 
     ## create top model
     inputs = base_model.input
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
     x = Dropout(0.3)(x)
-    x = Dense(1000, activation='relu')(x)
+    x = Dense(1000, activation="relu")(x)
     x = Dropout(0.3)(x)
     outputs = Dense(n_output, activation=activation)(x)
     model = Model(inputs=inputs, outputs=outputs)
@@ -104,10 +103,7 @@ def Inception(inception, input_shape, transfer=False, freeze_layer=None, activat
     else:
         for layer in base_model.layers:
             layer.trainable = True
-    
+
     model.summary()
 
     return model
-    
-
-    

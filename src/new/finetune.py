@@ -11,10 +11,9 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.models import load_model
 
 
-
-def finetune_model(out_dir, proj_dir, HN_model, batch_size, epoch, 
-                   freeze_layer, input_channel=3): 
-
+def finetune_model(
+    out_dir, proj_dir, HN_model, batch_size, epoch, freeze_layer, input_channel=3
+):
     """
     Fine tune head anc neck model using chest CT data;
 
@@ -28,14 +27,14 @@ def finetune_model(out_dir, proj_dir, HN_model, batch_size, epoch,
     i
     Keyword args:
         input_channel {int} -- image channel: 1 or 3;
-    
+
     Returns:
         Finetuned model for chest CT.
-    
+
     """
 
-    model_dir = os.path.join(out_dir, 'model')
-    pro_data_dir = os.path.join(proj_dir, 'pro_data')
+    model_dir = os.path.join(out_dir, "model")
+    pro_data_dir = os.path.join(proj_dir, "pro_data")
     if not os.path.exists(model_dir):
         os.mkdir(model_dir)
     if not os.path.exists(pro_data_dir):
@@ -43,13 +42,13 @@ def finetune_model(out_dir, proj_dir, HN_model, batch_size, epoch,
 
     ### load train data
     if input_channel == 1:
-        fn = 'exval1_arr1.npy'
+        fn = "exval1_arr1.npy"
     elif input_channel == 3:
-        fn = 'exval1_arr1.npy'
+        fn = "exval1_arr1.npy"
     x_train = np.load(os.path.join(pro_data_dir, fn))
     ### load train labels
-    train_df = pd.read_csv(os.path.join(pro_data_dir, 'exval1_img_df1.csv'))
-    y_train  = np.asarray(train_df['label']).astype('int').reshape((-1, 1))
+    train_df = pd.read_csv(os.path.join(pro_data_dir, "exval1_img_df1.csv"))
+    y_train = np.asarray(train_df["label"]).astype("int").reshape((-1, 1))
     print("sucessfully load data!")
 
     ## load saved model
@@ -80,27 +79,28 @@ def finetune_model(out_dir, proj_dir, HN_model, batch_size, epoch,
         shuffle=True,
         class_weight=None,
         sample_weight=None,
-        initial_epoch=0
-        )
-    
-#    ### valudation acc and loss
-#    score = model.evaluate(x_val, y_val)
-#    loss = np.around(score[0], 3)
-#    acc  = np.around(score[1], 3)
-#    print('val loss:', loss)
-#    print('val acc:', acc)
+        initial_epoch=0,
+    )
+
+    #    ### valudation acc and loss
+    #    score = model.evaluate(x_val, y_val)
+    #    loss = np.around(score[0], 3)
+    #    acc  = np.around(score[1], 3)
+    #    print('val loss:', loss)
+    #    print('val acc:', acc)
 
     #### save final model
-    run_model = saved_model.split('_')[0].strip()
-    model_fn = 'Tuned' + '_' + str(run_model) + '_' + \
-               str(strftime('%Y_%m_%d_%H_%M_%S', localtime()))
+    run_model = saved_model.split("_")[0].strip()
+    model_fn = (
+        "Tuned"
+        + "_"
+        + str(run_model)
+        + "_"
+        + str(strftime("%Y_%m_%d_%H_%M_%S", localtime()))
+    )
     model.save(os.path.join(model_dir, model_fn))
     tuned_model = model
-    print('fine tuning model complete!!')
-    print('saved fine-tuned model as:', model_fn)
+    print("fine tuning model complete!!")
+    print("saved fine-tuned model as:", model_fn)
 
     return tuned_model, model_fn
-
-    
-
-    

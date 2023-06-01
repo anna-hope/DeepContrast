@@ -19,9 +19,7 @@ from opts import parse_opts
 import tensorflow as tf
 
 
-
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     opt = parse_opts()
 
     random.seed(opt.manual_seed)
@@ -38,10 +36,10 @@ if __name__ == '__main__':
             os.makedirs(opt.HN_model_dir)
         if not os.path.exists(opt.HN_pro_data_dir):
             os.makefirs(opt.HN_pro_data_dir)
-     
-    print('\n--- STEP 3 - MODEL EVALUATION ---\n')   
-    
-    for opt.run_type in ['val', 'test']:
+
+    print("\n--- STEP 3 - MODEL EVALUATION ---\n")
+
+    for opt.run_type in ["val", "test"]:
         # evalute model
         loss, acc = evaluate_model(
             run_type=opt.run_type,
@@ -49,7 +47,8 @@ if __name__ == '__main__':
             pro_data_dir=opt.HN_pro_data_dir,
             saved_model=opt.run_model,
             threshold=opt.thr_img,
-            activation=opt.activation)
+            activation=opt.activation,
+        )
         if opt.stats_plots:
             get_stats_plots(
                 pro_data_dir=opt.HN_pro_data_dir,
@@ -65,4 +64,5 @@ if __name__ == '__main__':
                 thr_img=opt.thr_img,
                 thr_prob=opt.thr_prob,
                 thr_pos=opt.thr_pos,
-                bootstrap=opt.n_bootstrap)
+                bootstrap=opt.n_bootstrap,
+            )

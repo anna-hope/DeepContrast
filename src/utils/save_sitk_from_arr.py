@@ -1,14 +1,13 @@
-#--------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
 # save image as itk
-#-------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------
 def save_sitk_from_arr(img_sitk, new_arr, resize, save_dir):
-
     """
-    When resize == True: Used for saving predictions where padding needs to be added to increase the size 
-    of the prediction and match that of input to model. This function matches the size of the array in 
-    image_sitk_obj with the size of pred_arr, and saves it. This is done equally on all sides as the 
+    When resize == True: Used for saving predictions where padding needs to be added to increase the size
+    of the prediction and match that of input to model. This function matches the size of the array in
+    image_sitk_obj with the size of pred_arr, and saves it. This is done equally on all sides as the
     input to model and model output have different dims to allow for shift data augmentation.
-    When resize == False: the image_sitk_obj is only used as a reference for spacing and origin. The numpy 
+    When resize == False: the image_sitk_obj is only used as a reference for spacing and origin. The numpy
     array is not resized.
     image_sitk_obj: sitk object of input to model
     pred_arr: returned prediction from model - should be squeezed.
@@ -25,8 +24,12 @@ def save_sitk_from_arr(img_sitk, new_arr, resize, save_dir):
         y_diff = int((img_arr.shape[1] - new_arr.shape[1]) / 2)
         x_diff = int((img_arr.shape[2] - new_arr.shape[2]) / 2)
         # pad, defaults to 0
-        new_arr = np.pad(new_arr, ((z_diff, z_diff), (y_diff, y_diff), (x_diff, x_diff)), 'constant')
-        assert img_arr.shape == new_arr.shape, "returned array shape does not match your requested shape."
+        new_arr = np.pad(
+            new_arr, ((z_diff, z_diff), (y_diff, y_diff), (x_diff, x_diff)), "constant"
+        )
+        assert (
+            img_arr.shape == new_arr.shape
+        ), "returned array shape does not match your requested shape."
 
     # save sitk obj
     new_sitk = sitk.GetImageFromArray(new_arr)
@@ -34,8 +37,8 @@ def save_sitk_from_arr(img_sitk, new_arr, resize, save_dir):
     new_sitk.SetOrigin(img_sitk.GetOrigin())
 
     if output_dir != None:
-#        fn = "{}_{}_image_interpolated_roi_raw_gt.nrrd".format(dataset, patient_id)
-        fn = 'test_stik.nrrd'
+        #        fn = "{}_{}_image_interpolated_roi_raw_gt.nrrd".format(dataset, patient_id)
+        fn = "test_stik.nrrd"
         img_dir = os.path.join(output_dir, fn)
         writer = sitk.ImageFileWriter()
         writer.SetFileName(img_dir)

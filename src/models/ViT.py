@@ -1,7 +1,7 @@
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Deep learning for classification for contrast CT;
 # Transfer learning using Google Inception V3;
-#-------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------
 
 import os
 import numpy as np
@@ -13,9 +13,20 @@ import tensorflow
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Model
-from tensorflow.keras.preprocessing.image import img_to_array, load_img, ImageDataGenerator
+from tensorflow.keras.preprocessing.image import (
+    img_to_array,
+    load_img,
+    ImageDataGenerator,
+)
 from tensorflow.keras.layers import GlobalAveragePooling2D
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
+from tensorflow.keras.layers import (
+    Conv2D,
+    MaxPooling2D,
+    Flatten,
+    Dense,
+    Dropout,
+    BatchNormalization,
+)
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import BinaryCrossentropy
@@ -30,9 +41,9 @@ from tensorflow.keras.applications import ResNet152V2
 import tensorflow_addons as tfa
 import matplotlib.pyplot as plt
 
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # Vision Transformer
-#---------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 """
 Title: Image classification with Vision Transformer
@@ -73,22 +84,28 @@ patch_size = 6  # Size of the patches to be extract from the input images
 num_patches = (image_size // patch_size) ** 2
 projection_dim = 64
 num_heads = 4
-transformer_units = [projection_dim * 2, projection_dim]  # Size of the transformer layers
+transformer_units = [
+    projection_dim * 2,
+    projection_dim,
+]  # Size of the transformer layers
 transformer_layers = 8
 mlp_head_units = [2048, 1024]  # Size of the dense layers of the final classifier
 
 
 ## Use data augmentation
 data_augmentation = keras.Sequential(
-    [layers.Normalization(),
-     layers.Resizing(image_size, image_size),
-     layers.RandomFlip("horizontal"),
-     layers.RandomRotation(factor=0.02),
-     layers.RandomZoom(height_factor=0.2, width_factor=0.2)],
+    [
+        layers.Normalization(),
+        layers.Resizing(image_size, image_size),
+        layers.RandomFlip("horizontal"),
+        layers.RandomRotation(factor=0.02),
+        layers.RandomZoom(height_factor=0.2, width_factor=0.2),
+    ],
     name="data_augmentation",
-    )
+)
 # Compute the mean and the variance of the training data for normalization.
 data_augmentation.layers[0].adapt(x_train)
+
 
 ## Implement multilayer perceptron (MLP)
 def mlp(x, hidden_units, dropout_rate):
@@ -96,6 +113,7 @@ def mlp(x, hidden_units, dropout_rate):
         x = layers.Dense(units, activation=tf.nn.gelu)(x)
         x = layers.Dropout(dropout_rate)(x)
     return x
+
 
 ## Implement patch creation as a layer
 class Patches(layers.Layer):
@@ -111,10 +129,11 @@ class Patches(layers.Layer):
             strides=[1, self.patch_size, self.patch_size, 1],
             rates=[1, 1, 1, 1],
             padding="VALID",
-            )
+        )
         patch_dims = patches.shape[-1]
         patches = tf.reshape(patches, [batch_size, -1, patch_dims])
         return patches
+
 
 ## Let's display patches for a sample image
 plt.figure(figsize=(4, 4))
@@ -146,16 +165,15 @@ vector of size `projection_dim`. In addition, it adds a learnable position
 embedding to the projected vector.
 """
 
-class PatchEncoder(layers.Layer):
 
+class PatchEncoder(layers.Layer):
     def __init__(self, num_patches, projection_dim):
         super(PatchEncoder, self).__init__()
         self.num_patches = num_patches
         self.projection = layers.Dense(units=projection_dim)
         self.position_embedding = layers.Embedding(
-            input_dim=num_patches, 
-            output_dim=projection_dim
-            )
+            input_dim=num_patches, output_dim=projection_dim
+        )
 
     def call(self, patch):
         positions = tf.range(start=0, limit=self.num_patches, delta=1)
@@ -180,6 +198,7 @@ could also be used instead to aggregate the outputs of the Transformer block,
 especially when the number of patches and the projection dimensions are large.
 """
 
+
 def create_vit_classifier():
     inputs = layers.Input(shape=input_shape)
     # Augment data.
@@ -195,10 +214,8 @@ def create_vit_classifier():
         x1 = layers.LayerNormalization(epsilon=1e-6)(encoded_patches)
         # Create a multi-head attention layer.
         attention_output = layers.MultiHeadAttention(
-            num_heads=num_heads, 
-            key_dim=projection_dim, 
-            dropout=0.1
-            )(x1, x1)
+            num_heads=num_heads, key_dim=projection_dim, dropout=0.1
+        )(x1, x1)
         # Skip connection 1.
         x2 = layers.Add()([attention_output, encoded_patches])
         # Layer normalization 2.
@@ -213,32 +230,24 @@ def create_vit_classifier():
     representation = layers.Flatten()(representation)
     representation = layers.Dropout(0.5)(representation)
     # Add MLP.
-    features = mlp(
-        representation, 
-        hidden_units=mlp_head_units, 
-        dropout_rate=0.5
-        )
+    features = mlp(representation, hidden_units=mlp_head_units, dropout_rate=0.5)
     # Classify outputs.
     logits = layers.Dense(num_classes)(features)
     # Create the Keras model.
     model = keras.Model(inputs=inputs, outputs=logits)
-    
+
     return model
 
 
 ## Compile, train, and evaluate the mode
 def run_experiment(model):
-    
     optimizer = tfa.optimizers.AdamW(
-        learning_rate=learning_rate, 
-        weight_decay=weight_decay
-        )
+        learning_rate=learning_rate, weight_decay=weight_decay
+    )
 
     model.compile(
-        optimizer=optimizer,
-        loss=BinaryCrossentropy(from_logits=True),
-        metrics=['acc']
-        )
+        optimizer=optimizer, loss=BinaryCrossentropy(from_logits=True), metrics=["acc"]
+    )
 
     checkpoint_filepath = log_dir
     checkpoint_callback = keras.callbacks.ModelCheckpoint(
@@ -282,8 +291,3 @@ but also by parameters such as the learning rate schedule, optimizer, weight dec
 In practice, it's recommended to fine-tune a ViT model
 that was pre-trained using a large, high-resolution dataset.
 """
-
-
-    
-
-    

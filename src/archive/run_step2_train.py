@@ -13,7 +13,8 @@ import argparse
 import pydot
 import pydotplus
 import graphviz
-#from pydotplus import graphviz
+
+# from pydotplus import graphviz
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.losses import BinaryCrossentropy
@@ -25,39 +26,38 @@ from go_model.train_model import train_model
 from go_model.train_model import callbacks
 
 
-if __name__ == '__main__':
-
-    proj_dir = '/mnt/aertslab/USERS/Zezhong/contrast_detection/GitHub_Test'
-    label_dir = os.path.join(proj_dir, 'label')
-    out_dir = os.path.join(proj_dir, 'output')
+if __name__ == "__main__":
+    proj_dir = "/mnt/aertslab/USERS/Zezhong/contrast_detection/GitHub_Test"
+    label_dir = os.path.join(proj_dir, "label")
+    out_dir = os.path.join(proj_dir, "output")
 
     batch_size = 32
     lr = 1e-5
     epoch = 1
-    activation = 'sigmoid' #  'softmax' 
+    activation = "sigmoid"  #  'softmax'
     loss_func = BinaryCrossentropy(from_logits=True)
     opt = Adam(learning_rate=lr)
-    run_model = 'EffNetB4'    
-    
+    run_model = "EffNetB4"
+
     # data generator for train and val data
     train_gen = train_generator(
         pro_data_dir=proj_dir,
         batch_size=batch_size,
-        )
+    )
 
     x_val, y_val, val_gen = val_generator(
         pro_data_dir=pro_data_dir,
         batch_size=batch_size,
-        )
+    )
 
     my_model = get_model(
         out_dir=out_dir,
-        run_model=run_model, 
-        activation=activation, 
+        run_model=run_model,
+        activation=activation,
         input_shape=(192, 192, 3),
-        freeze_layer=None, 
-        transfer=False
-        )
+        freeze_layer=None,
+        transfer=False,
+    )
 
     ### train model
     train_model(
@@ -72,6 +72,5 @@ if __name__ == '__main__':
         epoch=epoch,
         opt=opt,
         loss_func=loss_func,
-        lr=lr
-        )
-
+        lr=lr,
+    )

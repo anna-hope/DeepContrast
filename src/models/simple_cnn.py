@@ -1,4 +1,3 @@
-
 import os
 import numpy as np
 import pandas as pd
@@ -19,13 +18,10 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import BinaryCrossentropy
 
 
-
-
 def simple_cnn(input_shape, activation):
-
     """
     simple CNN model
-    
+
     Args:
         activation {str or function} -- activation function in last layer: 'softmax' or 'sigmoid';
 
@@ -33,50 +29,47 @@ def simple_cnn(input_shape, activation):
         simple cnn model
 
     """
-    
+
     ## determine n_output
-    if activation == 'softmax':
+    if activation == "softmax":
         n_output = 2
-    elif activation == 'sigmoid':
+    elif activation == "sigmoid":
         n_output = 1
 
     model = Sequential()
 
-    model.add(Conv2D(16, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
+    model.add(
+        Conv2D(16, kernel_size=(3, 3), activation="relu", input_shape=input_shape)
+    )
     model.add(BatchNormalization(momentum=0.95))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    #model.add(Dropout(0.3))
+    # model.add(Dropout(0.3))
 
     model.add(BatchNormalization(momentum=0.95))
-    model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+    model.add(Conv2D(64, kernel_size=(3, 3), activation="relu"))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    #model.add(Dropout(0.3))
-    
-    model.add(BatchNormalization(momentum=0.95))
-    model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    #model.add(Dropout(0.3))
+    # model.add(Dropout(0.3))
 
     model.add(BatchNormalization(momentum=0.95))
-    model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+    model.add(Conv2D(128, kernel_size=(3, 3), activation="relu"))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    #model.add(Dropout(0.3))
+    # model.add(Dropout(0.3))
+
+    model.add(BatchNormalization(momentum=0.95))
+    model.add(Conv2D(128, kernel_size=(3, 3), activation="relu"))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # model.add(Dropout(0.3))
 
     model.add(Flatten())
     model.add(BatchNormalization(momentum=0.95))
-    model.add(Dense(256, activation='relu'))
+    model.add(Dense(256, activation="relu"))
     model.add(Dropout(0.3))
-    
+
     model.add(BatchNormalization(momentum=0.95))
-    model.add(Dense(256, activation='relu'))
+    model.add(Dense(256, activation="relu"))
     model.add(Dropout(0.3))
     model.add(Dense(n_output, activation=activation))
 
     model.summary()
 
     return model
-
-
-
-
-    

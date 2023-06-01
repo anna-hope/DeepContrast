@@ -1,4 +1,3 @@
-
 import os
 import numpy as np
 import pandas as pd
@@ -11,9 +10,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
-
 def train_generator(pro_data_dir, batch_size, input_channel=3):
-
     """
     create data generator for training dataset;
 
@@ -24,20 +21,20 @@ def train_generator(pro_data_dir, batch_size, input_channel=3):
 
     Return:
         Keras data generator;
-    
+
     """
-    
+
     ### load train data based on input channels
     if input_channel == 1:
-        fn = 'train_arr_1ch.npy'
+        fn = "train_arr_1ch.npy"
     elif input_channel == 3:
-        #fn = 'train_arr_3ch_crop.npy'
-        fn = 'train_arr_3ch.npy'
+        # fn = 'train_arr_3ch_crop.npy'
+        fn = "train_arr_3ch.npy"
     x_train = np.load(os.path.join(pro_data_dir, fn))
 
     ### load val labels
-    train_df = pd.read_csv(os.path.join(pro_data_dir, 'train_img_df.csv'))
-    y_train  = np.asarray(train_df['label']).astype('int').reshape((-1, 1))
+    train_df = pd.read_csv(os.path.join(pro_data_dir, "train_img_df.csv"))
+    y_train = np.asarray(train_df["label"]).astype("int").reshape((-1, 1))
 
     ## data generator
     datagen = ImageDataGenerator(
@@ -63,9 +60,9 @@ def train_generator(pro_data_dir, batch_size, input_channel=3):
         data_format=None,
         validation_split=0.0,
         dtype=None,
-        )
+    )
 
-   ### Train generator
+    ### Train generator
     train_gen = datagen.flow(
         x=x_train,
         y=y_train,
@@ -73,14 +70,13 @@ def train_generator(pro_data_dir, batch_size, input_channel=3):
         batch_size=batch_size,
         seed=42,
         shuffle=True,
-        )
-    print('Train generator created')
+    )
+    print("Train generator created")
 
     return train_gen
 
 
 def val_generator(pro_data_dir, batch_size, input_channel=3):
-
     """
     create data generator for validation dataset;
 
@@ -93,17 +89,17 @@ def val_generator(pro_data_dir, batch_size, input_channel=3):
         Keras data generator;
 
     """
-    
+
     ### load val data based on input channels
     if input_channel == 1:
-        fn = 'val_arr_1ch.npy'
+        fn = "val_arr_1ch.npy"
     elif input_channel == 3:
-        fn = 'val_arr_3ch.npy'
+        fn = "val_arr_3ch.npy"
     x_val = np.load(os.path.join(pro_data_dir, fn))
 
     ### load val labels
-    val_df = pd.read_csv(os.path.join(pro_data_dir, 'val_img_df.csv'))
-    y_val = np.asarray(val_df['label']).astype('int').reshape((-1, 1))
+    val_df = pd.read_csv(os.path.join(pro_data_dir, "val_img_df.csv"))
+    y_val = np.asarray(val_df["label"]).astype("int").reshape((-1, 1))
 
     datagen = ImageDataGenerator(
         featurewise_center=False,
@@ -128,8 +124,8 @@ def val_generator(pro_data_dir, batch_size, input_channel=3):
         data_format=None,
         validation_split=0.0,
         dtype=None,
-        )
-    
+    )
+
     datagen = ImageDataGenerator()
     val_gen = datagen.flow(
         x=x_val,
@@ -138,10 +134,7 @@ def val_generator(pro_data_dir, batch_size, input_channel=3):
         batch_size=batch_size,
         seed=42,
         shuffle=True,
-        )
-    print('val generator created')
+    )
+    print("val generator created")
 
     return x_val, y_val, val_gen
-
-
-
